@@ -33,8 +33,15 @@ public class Historicos {
 	public List<Aluno> mHistoricos = null;
 	
 	private String mConteudo[] = null;
-	public Historicos(String dir) {
+	private int mPAtualAno = 0, 
+			    mPAtualSemestre = 0;
+	public Historicos(String dir, String periodoAtual) {
 		String m_dir = dir;
+		
+		mPAtualAno = Integer.parseInt(periodoAtual.substring(0, 4));
+		mPAtualSemestre = Integer.parseInt(periodoAtual.substring(5, 6));
+		
+		
 		File folder = new File(m_dir);
 		File[] listOfFiles = folder.listFiles(new FilenameFilter() {public boolean accept(File dir, String name) {return name.toLowerCase().endsWith(".pdf");}});
 		mHistoricos = new Vector<Aluno>();
@@ -100,6 +107,44 @@ public class Historicos {
 					
 					String s = mConteudo[i].substring(i1 + 32, i2);
 					aluno.mEntrada = new String(s.trim());
+					
+					if (aluno.mEntrada.length()>0) {
+						if (aluno.mMatr.compareTo("20230000107")==0) {
+							System.out.println("Heelo");
+						}
+						int ano = Integer.parseInt(aluno.mEntrada.substring(0, 4));
+						int semestre = Integer.parseInt(aluno.mEntrada.substring(5, 6));
+						/*
+						semestre--;
+						if (semestre < 0) {
+							semestre = 0;
+							System.err.println("Warning: linha 116");
+						} 
+						*/
+						
+						
+						int semestre1 = mPAtualSemestre;
+						if (mPAtualAno == ano) { 
+							ano = 0;
+							semestre1 = mPAtualSemestre - semestre;
+						}
+						else {
+							int ano2 = mPAtualAno;
+							int ano1 = ano+1;
+							ano = ano2 - ano1;	
+							semestre1 += (3-semestre);
+							if (ano < 0) {
+								System.err.println("Warning: ENTRADA:" + aluno.mEntrada);
+							}
+						}
+						
+						
+						
+						int p = (ano * 2) +  semestre1;
+						aluno.mPeriodos = p;
+					}//					if (aluno.mEntrada.length()>0) {
+						
+					
 					//System.out.println(aluno.mEntrada);
 				}
 				
