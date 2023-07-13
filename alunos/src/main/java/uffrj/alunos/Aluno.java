@@ -62,12 +62,15 @@ public class Aluno {
 			linha = 1;
 		else if (titulo.compareTo("Pendente")==0)
 			linha = 2;
-		
-	
 		mCargaHoraria[linha][0] = Integer.parseInt(v1);
 		mCargaHoraria[linha][1] = Integer.parseInt(v2);
 		mCargaHoraria[linha][2] = Integer.parseInt(v3);
-		
-
+	}
+	
+	public double getPeriodoFloat() {
+		if (mEntrada.length() == 0)
+			mEntrada = new String("-1");
+		double v = Double.parseDouble(mEntrada);
+		return v;		
 	}
 }//public class Aluno {

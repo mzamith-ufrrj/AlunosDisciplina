@@ -35,6 +35,7 @@ public class Historicos {
 	private String mConteudo[] = null;
 	private int mPAtualAno = 0, 
 			    mPAtualSemestre = 0;
+	private String mOpenedFile = null;
 	public Historicos(String dir, String periodoAtual) {
 		String m_dir = dir;
 		
@@ -48,7 +49,8 @@ public class Historicos {
 		
 		for (int i = 0; i < listOfFiles.length; i++) {
 		  if (listOfFiles[i].isFile()) {
-		    System.out.println("\tArquivo: " + listOfFiles[i].getName());
+		    System.out.print("\tArquivo: " + listOfFiles[i].getName());
+		    mOpenedFile = listOfFiles[i].getName();
 		    open_formatted(m_dir+listOfFiles[i].getName());
 		    //open_formatted(m_dir+"historico_20230025741.pdf");
 		    //open_formatted(m_dir+"historico_20210011696.pdf");
@@ -63,15 +65,11 @@ public class Historicos {
 			
 		  }//if (listOfFiles[i].isFile()) { 
 		}//for (int i = 0; i < listOfFiles.length; i++) {
-		
-		
-		
-		
-		
-		
-
-		
 	}//public Historico() {
+	
+	private void printLog(String line) {
+		System.err.println("LOG [ERROR] -> " + line);
+	}
 	
 	private void parse() {
 		Aluno aluno = new Aluno();
@@ -94,7 +92,8 @@ public class Historicos {
 					if (hasMatr) {
 						s = mConteudo[i].substring(i2 + 10);
 						aluno.mMatr = new String(s.trim());	
-					}
+					}else
+						printLog("Arquivo: " + mOpenedFile + " SEM MATRÍCULA");
 					
 					
 					//System.out.println(aluno.mNome);
@@ -109,42 +108,12 @@ public class Historicos {
 					aluno.mEntrada = new String(s.trim());
 					
 					if (aluno.mEntrada.length()>0) {
-						if (aluno.mMatr.compareTo("20230000107")==0) {
-							System.out.println("Heelo");
-						}
 						int ano = Integer.parseInt(aluno.mEntrada.substring(0, 4));
 						int semestre = Integer.parseInt(aluno.mEntrada.substring(5, 6));
-						/*
-						semestre--;
-						if (semestre < 0) {
-							semestre = 0;
-							System.err.println("Warning: linha 116");
-						} 
-						*/
-						
-						
-						int semestre1 = mPAtualSemestre;
-						if (mPAtualAno == ano) { 
-							ano = 0;
-							semestre1 = mPAtualSemestre - semestre;
-						}
-						else {
-							int ano2 = mPAtualAno;
-							int ano1 = ano+1;
-							ano = ano2 - ano1;	
-							semestre1 += (3-semestre);
-							if (ano < 0) {
-								System.err.println("Warning: ENTRADA:" + aluno.mEntrada);
-							}
-						}
-						
-						
-						
-						int p = (ano * 2) +  semestre1;
-						aluno.mPeriodos = p;
+						aluno.mPeriodos = getPeriodos(mPAtualAno, mPAtualSemestre, ano, semestre);
 					}//					if (aluno.mEntrada.length()>0) {
-						
-					
+					else
+						printLog("Arquivo: " + mOpenedFile + " ENTRADA INDEFINIDA");
 					//System.out.println(aluno.mEntrada);
 				}
 				
@@ -227,6 +196,19 @@ public class Historicos {
 
 	}//private void parse() {
 	
+	private int getPeriodos(int a2, int p2, int a1, int p1) {
+		int p0   = 0,
+		    anos = 0;
+		
+		if (a2 > a1) p0 = p2 + (3 - p1);
+		else p0 = p2 - p1 + 1;
+	
+		anos = a2 - (a1 + 1);
+		if (anos <= 0) anos = 0;
+		
+		return   2 * anos + p0;
+		 
+	}
 
 
 	private void open_formatted(String filename) {
